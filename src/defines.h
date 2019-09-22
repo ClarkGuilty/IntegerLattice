@@ -2,15 +2,15 @@
 #define DEFINES_H
 
 /* Method -- choose whether to save memory */
-#define METHOD_MEMSAVE
+//#define METHOD_MEMSAVE
 
 
 /* Resolution */
-const int NX              = 1024;
-const int NVX             = 1024;
-const int NT              = 30;
-const int OUTPUTEVERY     = 10;
-const double TMAX         = 3.0;
+const int NX              = 2048;
+const int NVX             = 2048;
+const int NT              = 100;
+const int OUTPUTEVERY     = 1;
+const double TMAX         = 10;
 
 /* Domain -L:L -V:V */
 const double L            = 0.5;

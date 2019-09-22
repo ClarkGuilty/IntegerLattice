@@ -37,6 +37,12 @@ You will have to modify the Makefile to point to your library installations
 recompile and run:
 ```
 make clean; make; ./IntegerLattice 
+make clean; make run
+```
+
+to run and make plots:
+```
+make clean; make simulation
 ```
 
 to run in parallel (METHOD_MEMSAVE only):

@@ -1,6 +1,6 @@
 #ifndef POISSON1D_H
 #define POISSON1D_H
 
-void poisson1D(const double (&rho)[NX], double (&acc)[NX]);
+void poisson1D(const double (&rho)[NX], double (&acc)[NX], double &total_U);
 
 #endif

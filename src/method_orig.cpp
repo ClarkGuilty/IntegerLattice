@@ -14,7 +14,12 @@ using namespace std;
 double lattice[NX][NVX]; // lattice (distribution function f)
 double rho[NX];          // density
 double acc[NX];          // acceleration
-  
+
+
+//Testing energy conservation. -J
+double total_K = 0;
+double total_U = 0;
+double U0;
 
 /** Original Integer Lattice Algorithm
  */
@@ -22,6 +27,8 @@ void run_simulation() {
   
   int shift;
   double x_phys, vx_phys;
+  FILE *fileEnergy = fopen("./energyEvolution.dat","w+"); //File to print energy values
+
   
   // Set the initial conditions
   for ( int x = 0; x < NX; x++ ) 
@@ -45,9 +52,18 @@ void run_simulation() {
      rho[x] *= DVX;
     }
     
+    //Updating energy -J
+    total_K = 0; 
+    for ( int x = 0; x < NX; x++ ) {
+    for ( int vx = 0; vx < NVX; vx++ ) {
+      vx_phys = -V + (1.0 * vx + 0.5) * DVX;
+	  total_K += 0.5*lattice[x][vx]*vx_phys*vx_phys;
+	    }
+    }
+    total_K *= DX * DVX;
     // get acceleration
-    poisson1D(rho, acc);
-    
+    poisson1D(rho, acc, total_U);
+    fprintf(fileEnergy, "%f;%f\n", total_K, total_U-U0); //Print energy before updating the Lattice -J
     // kick
     for ( int x = 0; x < NX; x++ ) {
       shift = ( NVX - (int) round( DT * acc[x] / DVX ) ) % NVX;
@@ -64,9 +80,9 @@ void run_simulation() {
     // Save output as HDF5
     if(((t+1) % OUTPUTEVERY) == 0)
       save(lattice, t+1);
-      
+    
   }
-  
+  fclose(fileEnergy);
 }
 
 #endif

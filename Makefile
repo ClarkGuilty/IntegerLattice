@@ -14,13 +14,13 @@ LINKER      = mpicxx
 ifeq ($(SYSTYPE),"odyssey-gcc")
   HDF5_INCL = -I/usr/include/hdf5/openmpi
   HDF5_LIB  = -L/usr/lib/x86_64-linux-gnu/hdf5/openmpi -lhdf5
-  POISFFT_INCL = -I/home/pmocz/PoisFFT/src
-  POISFFT_LIB = -L/home/pmocz/PoisFFT/lib/gcc -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp
+  POISFFT_INCL = -I/home/hiparco/gitStuff/PoisFFT/src
+  POISFFT_LIB = -L/home/hiparco/gitStuff/PoisFFT/lib/gcc -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp
 else
   HDF5_INCL = 
   HDF5_LIB  = -lhdf5
-  POISFFT_INCL = -I/n/home02/pmocz/C/PoisFFT/src
-  POISFFT_LIB = -L/n/home02/pmocz/C/PoisFFT/lib/gcc -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp
+  POISFFT_INCL = -I/home/hiparco/gitStuff/PoisFFT/src
+  POISFFT_LIB = -L/home/hiparco/gitStuff/PoisFFT/lib/gcc -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp
 endif
 
 ############################################
@@ -67,10 +67,21 @@ $(EXEC): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXEC)
+	rm analysis/*.pdf
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCL) $(MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCL) $(MAKEFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
+	
+run: $(EXEC)
+	./IntegerLattice
+
+simulation: clean run plots
+	echo Heh
+plots:
+	cd analysis && python plot.py 0 10 20 30 40 50 60 70 80 90 100 
+	
+
 

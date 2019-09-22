@@ -15,14 +15,14 @@ def main(argv):
     hfile = h5py.File('../output/snap' + snap + '.h5','r')
     f = hfile["/f"][:]
     
-    fig = plt.imshow(f.T, cmap="spectral", interpolation="none")
+    fig = plt.imshow(f.T, cmap="Spectral", interpolation="none")
     plt.gca().invert_yaxis()
     plt.axis('off')
     fig.axes.get_xaxis().set_visible(False)
     fig.axes.get_yaxis().set_visible(False)
     
    
-    plt.savefig('snap' + snap + '.pdf', aspect = 'normal', bbox_inches='tight', pad_inches = 0)
+    plt.savefig('snap' + snap + '.png', aspect = 'normal', bbox_inches='tight', pad_inches = 0)
     plt.close()
     
     hfile.close()

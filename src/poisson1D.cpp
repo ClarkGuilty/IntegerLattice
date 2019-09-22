@@ -14,7 +14,7 @@
  *  phi = ifft(ifftshift(phihat));
  *  a = -B*phi;
 **/
-void poisson1D(const double (&rho)[NX], double (&acc)[NX]) {
+void poisson1D(const double (&rho)[NX], double (&acc)[NX], double &total_U) {
 
   // domain dimensions
   const double Ls[DIM] = {2.0*L};
@@ -39,6 +39,14 @@ void poisson1D(const double (&rho)[NX], double (&acc)[NX]) {
   
   //run the solver, can be run many times for different right-hand sides
   S.execute(phi, RHS);
+  
+  
+  //Updates potential energy.
+  total_U = 0;
+  for(int x = 0; x < NX; x++)
+  	total_U = 0.5*rho[x]*phi[x]*(2.0*L)/NX;
+  	
+  
   
   // calculate acceleration (2nd-order central difference)
   acc[0] = -( -3.0*phi[0] + 4.0*phi[1] - phi[2] ) / (2.0*DX);

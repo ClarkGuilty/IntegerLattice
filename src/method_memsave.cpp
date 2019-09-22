@@ -21,7 +21,8 @@ void run_simulation() {
   Lattice lattice;
   double rho[NX];          // density
   double acc[NX];          // acceleration
-
+  double  total_U = 0;
+  double  total_K = 0;
   MPI_Init(NULL, NULL);
 
   int mpi_rank, mpi_size;
@@ -54,7 +55,7 @@ void run_simulation() {
     MPI_Allgather(&rho_buffer, n_elem_per_proc, MPI_DOUBLE, rho, n_elem_per_proc, MPI_DOUBLE, MPI_COMM_WORLD);
 
     // get acceleration
-    poisson1D(rho, acc);
+    poisson1D(rho, acc,total_U);
     
     // store integer accelerations
     lattice.store_accel(t, acc);
