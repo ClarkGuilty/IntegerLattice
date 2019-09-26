@@ -1,9 +1,11 @@
 #include <algorithm>  // round()
+#include </usr/include/complex.h>
 
 #include "defines.h"
 #include "init_conditions.h"
 #include "iterators.h"
 #include "poisson1D.h"
+#include "fftw3.h"
 #include "save.h"
 
 using namespace std;
@@ -21,14 +23,55 @@ double total_K = 0;
 double total_U = 0;
 double U0;
 
+
+//Returns the second Fourier coefficient, prints the FourierPowerSeries.
+double fourierCoef2(double rhoProm, char *name, int print)
+{
+    
+    fftw_complex *in, *out;
+    double ans = 0;
+    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*NX);
+    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*NX);
+    
+    fftw_plan pIda;
+    pIda = fftw_plan_dft_1d(NX, in, out,FFTW_FORWARD, FFTW_MEASURE);
+
+    //loads density on IN and sets OUT to 0.
+    
+    for(int i=0;i<NX;i+=1){
+
+       __real__ in[i][0] = (((rho[i] - rhoProm )/rhoProm)); // $\delta$
+        out[i][0] = 0;
+    }
+    fftw_execute(pIda); //Execute FFT.
+
+    ans = cabs(out[4]);
+    
+    if(print==1){
+        FILE *output = fopen(name, "w+");
+        for(int i=0;i<NX;i+=1){
+            fourierPowerSeries[i] = out[i];
+            fprintf(output, "%f\n", fourierPowerSeries[i]); //Imprime en Masas solares / kiloparsec.
+        }
+        fclose(output);
+    }
+    fftw_free(in);
+    fftw_free(out);
+    return ans;
+
+}
+
+double *fourierPowerSeries = malloc((sizeof(double)*NX));
 /** Original Integer Lattice Algorithm
  */
 void run_simulation() {
   
   int shift;
   double x_phys, vx_phys;
+  
+  double deltaId;
   FILE *fileEnergy = fopen("./energyEvolution.dat","w+"); //File to print energy values
-
+  FILE *perturbation = fopen("./evolution/fourierEvolution.dat","w+"); //File to print the Fourier Coefficients.
   
   // Set the initial conditions
   for ( int x = 0; x < NX; x++ ) 
@@ -80,6 +123,10 @@ void run_simulation() {
     // Save output as HDF5
     if(((t+1) % OUTPUTEVERY) == 0)
       save(lattice, t+1);
+    
+    sprintf(filename, "./m%dpowerSeries%d.dat", NX,t);
+    deltaId = fourierCoef2(rho,filename, 0);
+     fprintf(perturbation, "%f\n", deltaId);
     
   }
   fclose(fileEnergy);
