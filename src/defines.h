@@ -7,7 +7,7 @@
 
 /* Resolution */
 const int NX              = 512;
-const int NVX             = 512;
+const int NVX             =512;
 const int NT              = 100;
 const int OUTPUTEVERY     = 1;
 const double TMAX         = 10;

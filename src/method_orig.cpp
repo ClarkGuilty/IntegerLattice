@@ -24,44 +24,7 @@ double total_U = 0;
 double U0;
 
 
-//Returns the second Fourier coefficient, prints the FourierPowerSeries.
-double fourierCoef2(double rhoProm, char *name, int print)
-{
-    
-    fftw_complex *in, *out;
-    double ans = 0;
-    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*NX);
-    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*NX);
-    
-    fftw_plan pIda;
-    pIda = fftw_plan_dft_1d(NX, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
-    //loads density on IN and sets OUT to 0.
-    
-    for(int i=0;i<NX;i+=1){
-
-       __real__ in[i][0] = (((rho[i] - rhoProm )/rhoProm)); // $\delta$
-        out[i][0] = 0;
-    }
-    fftw_execute(pIda); //Execute FFT.
-
-    ans = cabs(out[4]);
-    
-    if(print==1){
-        FILE *output = fopen(name, "w+");
-        for(int i=0;i<NX;i+=1){
-            fourierPowerSeries[i] = out[i];
-            fprintf(output, "%f\n", fourierPowerSeries[i]); //Imprime en Masas solares / kiloparsec.
-        }
-        fclose(output);
-    }
-    fftw_free(in);
-    fftw_free(out);
-    return ans;
-
-}
-
-double *fourierPowerSeries = malloc((sizeof(double)*NX));
 /** Original Integer Lattice Algorithm
  */
 void run_simulation() {
@@ -71,7 +34,7 @@ void run_simulation() {
   
   double deltaId;
   FILE *fileEnergy = fopen("./energyEvolution.dat","w+"); //File to print energy values
-  FILE *perturbation = fopen("./evolution/fourierEvolution.dat","w+"); //File to print the Fourier Coefficients.
+//   char *filename = (char*) malloc(200* sizeof(char));
   
   // Set the initial conditions
   for ( int x = 0; x < NX; x++ ) 
@@ -88,11 +51,17 @@ void run_simulation() {
   // Main Loop
   for ( int t = 0; t < NT; t++ )  {
     
+      
+    
+     
+//     sprintf(filename, "./m%ddensity%d.dat", NX,t);
+//     FILE *density = fopen(filename,"w+"); //File to print the Fourier Coefficients.
     // get density
     for ( int x = 0; x < NX; x++ ) {
      rho[x] = 0.0;
      for ( int vx = 0; vx < NVX; vx++ )   rho[x] += lattice[x][vx];
      rho[x] *= DVX;
+//      fprintf(density,"%f\n",rho[x]);
     }
     
     //Updating energy -J
@@ -124,9 +93,7 @@ void run_simulation() {
     if(((t+1) % OUTPUTEVERY) == 0)
       save(lattice, t+1);
     
-    sprintf(filename, "./m%dpowerSeries%d.dat", NX,t);
-    deltaId = fourierCoef2(rho,filename, 0);
-     fprintf(perturbation, "%f\n", deltaId);
+    
     
   }
   fclose(fileEnergy);

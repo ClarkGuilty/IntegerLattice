@@ -67,7 +67,7 @@ $(EXEC): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXEC)
-	rm analysis/*.pdf
+	rm analysis/*.png
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCL) $(MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
@@ -79,7 +79,7 @@ run: $(EXEC)
 	./IntegerLattice
 
 simulation: clean run plots
-	echo Heh
+
 plots:
 	cd analysis && python plot.py 0 10 20 30 40 50 60 70 80 90 100 
 	
